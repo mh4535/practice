@@ -1,0 +1,65 @@
+SET_ONE = 1
+SET_TWO = -1
+OPPOSITE = -1
+ALL_ASSIGNMENTS_ARE_VALID = True 
+NO_PARENT = -1
+
+
+from collections import defaultdict
+
+class Solution:
+
+    def build_graph(self, dislikes):
+
+        graph = defaultdict(list)
+
+        for node_one, node_two in dislikes:
+            graph[node_one].append(node_two)
+            graph[node_two].append(node_one)
+
+        return graph 
+
+    def are_assignments_from_this_node_valid(self, graph, set_assignments, node, parent):
+
+        #Base case
+        if node in set_assignments:
+            return set_assignments[node] != set_assignments[parent]
+
+        #Process node
+
+        if node not in set_assignments and parent == NO_PARENT:
+            set_assignments[node] = SET_ONE
+
+        if node not in set_assignments:
+            set_assignments[node] = set_assignments[parent] * OPPOSITE
+
+        #Get neighbors
+        neighbors = graph[node]
+        for neighbor in neighbors:            
+            
+            is_set_assignment_valid = self.are_assignments_from_this_node_valid(graph, set_assignments, neighbor, node)
+
+            if not is_set_assignment_valid:
+                return False
+        
+        return ALL_ASSIGNMENTS_ARE_VALID
+
+    def possibleBipartition(self, n: int, dislikes: List[List[int]]) -> bool:
+
+        graph = self.build_graph(dislikes)
+
+        set_assignments = {}
+
+        for node in graph:
+
+            if node in set_assignments:
+                continue
+            
+            is_assignment_valid = self.are_assignments_from_this_node_valid(graph, set_assignments, node, NO_PARENT)
+
+            if not is_assignment_valid:
+                # print(set_assignments)
+                return False
+        
+        
+        return ALL_ASSIGNMENTS_ARE_VALID

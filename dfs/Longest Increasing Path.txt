@@ -1,0 +1,77 @@
+NO_PATH = 0
+INITIAL_NUM = -1
+INITIAL_PATH_LENGTH = 0
+directions = [[1, 0], [-1, 0], [0, 1], [0, -1]]
+
+class Solution:
+
+    def is_in_bounds(self, matrix, row, col):
+
+        num_rows = len(matrix)
+        num_cols = len(matrix[0])
+
+        is_row_in_bounds = row >= 0 and row < num_rows
+        is_col_in_bounds = col >= 0 and col < num_cols
+
+        return is_row_in_bounds and is_col_in_bounds
+    
+
+    def mark_increasing_paths(self, matrix, visited, longest_seq_from_curr_pos_cache, row, col, last_num, path_len):
+
+        #Base cases 
+        if not self.is_in_bounds(matrix, row, col):
+            return path_len
+
+        if (row, col) in visited:
+            return path_len
+        
+        if matrix[row][col] <= last_num:
+            return path_len
+
+        if (row, col) in longest_seq_from_curr_pos_cache:
+            return longest_seq_from_curr_pos_cache[(row, col)]
+        
+        #Process node 
+        visited.add((row, col))
+        max_path_from_this_position = path_len
+
+
+        #Recurse on neighbors
+        for row_offset, col_offset in directions:
+
+            new_row = row + row_offset
+            new_col = col + col_offset                     
+
+            path_len_from_this_neighbor = self.mark_increasing_paths(matrix, visited, longest_seq_from_curr_pos_cache, new_row, new_col, matrix[row][col], path_len)
+
+            curr_path_length = 1 + path_len_from_this_neighbor
+
+            max_path_from_this_position = max(max_path_from_this_position, curr_path_length)
+        
+        visited.remove((row, col))
+        longest_seq_from_curr_pos_cache[(row, col)] = max_path_from_this_position
+        return max_path_from_this_position
+
+        
+
+    def longestIncreasingPath(self, matrix: List[List[int]]) -> int:
+
+        num_rows = len(matrix)
+        num_cols = len(matrix[0])
+
+        longest_seq_from_curr_pos_cache = {}
+        max_path_length = 0
+        initial_path_length = 0
+        last_num = -1
+
+        for row in range(num_rows):
+            for col in range(num_cols):
+
+                visited = set()
+
+                curr_path_length = self.mark_increasing_paths(matrix, visited, longest_seq_from_curr_pos_cache, row, col, INITIAL_NUM, INITIAL_PATH_LENGTH)
+
+                max_path_length = max(max_path_length, curr_path_length)
+
+        
+        return max_path_length

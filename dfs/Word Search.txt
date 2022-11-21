@@ -1,0 +1,54 @@
+#This code passed the test. When I modularized the code, it timed out on some of the tests.
+
+
+WORD_DOES_NOT_EXIST = False
+STARTING_LETTER_POSITION = 0
+
+class Solution:   
+
+    def does_path_exist_from_this_letter(self, board, visited, word, row, col, letter_position):
+
+        num_rows, num_cols = len(board), len(board[0])
+
+        if not (row >= 0 and row < num_rows and col >= 0 and col < num_cols):
+            return False
+
+        if board[row][col] != word[letter_position]:
+            return False
+        
+        if (row, col) in visited:
+            return False
+
+        if letter_position == len(word) - 1:
+            return True
+        
+        board_position = (row, col)
+        visited.add(board_position)
+        
+        if self.does_path_exist_from_this_letter(board, visited, word, row + 1, col, letter_position + 1):
+            return True 
+        
+        if self.does_path_exist_from_this_letter(board, visited, word, row - 1, col, letter_position + 1):
+            return True 
+        
+        if self.does_path_exist_from_this_letter(board, visited, word, row, col + 1, letter_position + 1):
+            return True 
+
+        if self.does_path_exist_from_this_letter(board, visited, word, row, col - 1, letter_position + 1):
+            return True
+        
+        visited.remove(board_position)
+        return False  
+
+    def exist(self, board: List[List[str]], word: str) -> bool:
+
+        num_rows, num_cols = len(board), len(board[0])
+        visited = set()
+
+        for row in range(num_rows):
+            for col in range(num_cols):
+
+                if self.does_path_exist_from_this_letter(board, visited, word, row, col, STARTING_LETTER_POSITION):
+                    return True
+
+        return WORD_DOES_NOT_EXIST

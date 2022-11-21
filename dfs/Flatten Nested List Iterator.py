@@ -1,0 +1,66 @@
+# """
+# This is the interface that allows for creating nested lists.
+# You should not implement it, or speculate about its implementation
+# """
+#class NestedInteger:
+#    def isInteger(self) -> bool:
+#        """
+#        @return True if this NestedInteger holds a single integer, rather than a nested list.
+#        """
+#
+#    def getInteger(self) -> int:
+#        """
+#        @return the single integer that this NestedInteger holds, if it holds a single integer
+#        Return None if this NestedInteger holds a nested list
+#        """
+#
+#    def getList(self) -> [NestedInteger]:
+#        """
+#        @return the nested list that this NestedInteger holds, if it holds a nested list
+#        Return None if this NestedInteger holds a single integer
+#        """
+
+class NestedIterator:
+    def __init__(self, nested_list: [NestedInteger]):
+
+        self.flattened_list = self.flatten_list(nested_list)
+        self.next_position = 0
+
+    def flatten_list(self, nested_list):
+
+        flattened_list = []
+
+        for element in nested_list:
+                
+            if element.isInteger():
+                num = element.getInteger()
+                flattened_list.append(num)
+                continue
+
+            nested_sublist = element.getList()
+            flattened_nested_list = self.flatten_list(nested_sublist)
+
+            for unnested_int in flattened_nested_list:
+                flattened_list.append(unnested_int)
+
+        return flattened_list 
+    
+    def next(self) -> int:
+
+        next_element = self.flattened_list[self.next_position]
+        self.next_position += 1
+
+        return next_element
+        
+        
+    
+    def hasNext(self) -> bool:
+
+        return self.next_position < len(self.flattened_list)
+
+        
+         
+
+# Your NestedIterator object will be instantiated and called as such:
+# i, v = NestedIterator(nestedList), []
+# while i.hasNext(): v.append(i.next())
